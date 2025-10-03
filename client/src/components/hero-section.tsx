@@ -1,6 +1,6 @@
 import { useParallax } from '@/hooks/use-scroll-animation';
 import { Button } from '@/components/ui/button';
-import weenyImage from '@assets/file_0000000017c461f48ced026eac5ba920_1759426135956.png';
+import weenyImage from '@assets/BackgroundEraser_20251003_161709572_1759505737101.png';
 
 export function HeroSection() {
   const parallaxOffset = useParallax();
@@ -24,7 +24,7 @@ export function HeroSection() {
             </h1>
             
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 font-light">
-              The spookiest, fuzziest memecoin on Solana. Join the haunted house party! 👻🎃
+              The spookiest ghost memecoin on Solana. Join the haunted house party! 👻🎃
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
@@ -65,7 +65,7 @@ export function HeroSection() {
             <div className="absolute inset-0 halloween-gradient opacity-30 blur-3xl rounded-full animate-pulse-glow"></div>
             <img 
               src={weenyImage} 
-              alt="Weeny character - cute fuzzy creature with big eyes" 
+              alt="Weeny character - cute ghost saying BOO" 
               className="relative z-10 w-full max-w-md animate-float drop-shadow-2xl"
               data-testid="img-weeny-character"
               style={{

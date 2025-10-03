@@ -2,7 +2,9 @@
 
 ## Overview
 
-This is a Halloween-themed memecoin landing page built for the Weeny token on the Solana blockchain. The application is a single-page marketing website featuring spooky aesthetics, animated elements, and comprehensive information about the Weeny memecoin project. It includes sections for project details, tokenomics, purchasing instructions, roadmap, and community links.
+This is a Halloween-themed memecoin landing page built for the Weeny token on the Solana blockchain. The application is a single-page marketing website featuring a cute ghost character, spooky aesthetics, animated elements, and comprehensive information about the Weeny memecoin project. It includes sections for project details, tokenomics, purchasing instructions, roadmap, and community links.
+
+**Main Character**: White ghost with black paws raised saying "BOO" (BackgroundEraser_20251003_161709572_1759505737101.png)
 
 ## User Preferences
 
