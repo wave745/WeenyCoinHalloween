@@ -1,14 +1,6 @@
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 export function Navigation() {
-  const [soundEnabled, setSoundEnabled] = useState(false);
-
-  const toggleSound = () => {
-    setSoundEnabled(!soundEnabled);
-    // TODO: Implement actual sound functionality
-  };
-
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -59,21 +51,9 @@ export function Navigation() {
           </button>
         </div>
         
-        <div className="flex items-center gap-4">
-          <Button
-            onClick={toggleSound}
-            variant="ghost"
-            size="icon"
-            className="w-10 h-10 rounded-lg bg-muted hover:bg-primary/20 hover:scale-110 transition-all"
-            data-testid="button-sound-toggle"
-          >
-            <span>{soundEnabled ? '🔊' : '🔇'}</span>
-          </Button>
-          
-          <Button className="px-6 py-2 rounded-lg halloween-gradient text-white font-semibold hover:scale-105 transition-transform" data-testid="button-buy-weeny">
-            Buy $WEENY
-          </Button>
-        </div>
+        <Button className="px-6 py-2 rounded-lg halloween-gradient text-white font-semibold hover:scale-105 transition-transform" data-testid="button-buy-weeny">
+          Buy $WEENY
+        </Button>
       </div>
     </nav>
   );
