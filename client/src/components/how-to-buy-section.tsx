@@ -1,5 +1,6 @@
 import { useScrollAnimation } from '@/hooks/use-scroll-animation';
 import { Button } from '@/components/ui/button';
+import pumpfunLogo from '@assets/pumpfun-logo.png';
 
 interface Step {
   number: number;
@@ -29,7 +30,7 @@ export function HowToBuySection() {
     {
       number: 3,
       title: "Visit DEX",
-      description: "Go to Jupiter or Raydium and connect your wallet",
+      description: "Go to Jupiter or pump.fun and connect your wallet",
       emoji: "🔄",
       delay: 0.2,
     },
@@ -76,8 +77,9 @@ export function HowToBuySection() {
               <Button className="px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold hover:scale-105 transition-transform" data-testid="button-buy-jupiter">
                 Buy on Jupiter 🪐
               </Button>
-              <Button className="px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold hover:scale-105 transition-transform" data-testid="button-buy-raydium">
-                Buy on Raydium ☀️
+              <Button className="px-8 py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold hover:scale-105 transition-transform flex items-center gap-2 justify-center" data-testid="button-buy-pumpfun">
+                <img src={pumpfunLogo} alt="pump.fun" className="h-6 w-6" />
+                Buy on pump.fun
               </Button>
             </div>
           </div>
