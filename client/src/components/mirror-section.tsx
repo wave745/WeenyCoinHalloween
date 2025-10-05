@@ -1,6 +1,6 @@
 import { useScrollAnimation } from '@/hooks/use-scroll-animation';
 import { Button } from '@/components/ui/button';
-import { Upload, Camera, Download, Sparkles } from 'lucide-react';
+import { Upload, Camera, Download, Sparkles, RotateCcw, Check } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -21,19 +21,27 @@ export function MirrorSection() {
   const { ref, isVisible } = useScrollAnimation();
   const { toast } = useToast();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [hauntedImage, setHauntedImage] = useState<string | null>(null);
   const [hauntingMessage, setHauntingMessage] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [showWebcam, setShowWebcam] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const [showFlash, setShowFlash] = useState(false);
+  const [showCaptureReview, setShowCaptureReview] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     return () => {
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(track => track.stop());
+      }
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
       }
     };
   }, []);
@@ -52,7 +60,13 @@ export function MirrorSection() {
 
   const startWebcam = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          facingMode: 'user'
+        } 
+      });
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -68,7 +82,27 @@ export function MirrorSection() {
     }
   };
 
-  const capturePhoto = () => {
+  const startCountdown = () => {
+    setCountdown(3);
+    let count = 3;
+
+    countdownIntervalRef.current = setInterval(() => {
+      count--;
+      if (count === 0) {
+        setCountdown(0);
+        if (countdownIntervalRef.current) {
+          clearInterval(countdownIntervalRef.current);
+        }
+        setTimeout(() => {
+          performCapture();
+        }, 100);
+      } else {
+        setCountdown(count);
+      }
+    }, 1000);
+  };
+
+  const performCapture = () => {
     if (videoRef.current && canvasRef.current) {
       const video = videoRef.current;
       const canvas = canvasRef.current;
@@ -78,16 +112,53 @@ export function MirrorSection() {
       canvas.height = video.videoHeight;
       
       if (ctx) {
-        ctx.drawImage(video, 0, 0);
-        const imageData = canvas.toDataURL('image/png');
-        setSelectedImage(imageData);
-        setShowWebcam(false);
+        // Mirror the image for selfie mode
+        ctx.save();
+        ctx.scale(-1, 1);
+        ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+        ctx.restore();
         
-        if (streamRef.current) {
-          streamRef.current.getTracks().forEach(track => track.stop());
-          streamRef.current = null;
-        }
+        const imageData = canvas.toDataURL('image/png');
+        setCapturedImage(imageData);
+        setShowFlash(true);
+        setCountdown(null);
+        setShowCaptureReview(true);
+        
+        // Hide flash after animation
+        setTimeout(() => setShowFlash(false), 300);
       }
+    }
+  };
+
+  const confirmCapture = () => {
+    setSelectedImage(capturedImage);
+    setShowWebcam(false);
+    setShowCaptureReview(false);
+    
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+  };
+
+  const retakePhoto = () => {
+    setCapturedImage(null);
+    setShowCaptureReview(false);
+  };
+
+  const cancelWebcam = () => {
+    setShowWebcam(false);
+    setShowCaptureReview(false);
+    setCapturedImage(null);
+    setCountdown(null);
+    
+    if (countdownIntervalRef.current) {
+      clearInterval(countdownIntervalRef.current);
+    }
+    
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
     }
   };
 
@@ -205,6 +276,7 @@ export function MirrorSection() {
     setSelectedImage(null);
     setHauntedImage(null);
     setHauntingMessage("");
+    setCapturedImage(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -256,36 +328,85 @@ export function MirrorSection() {
               </div>
             )}
 
-            {showWebcam && (
-              <div className="space-y-4">
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  className="w-full rounded-lg border-2 border-primary"
-                  data-testid="video-webcam"
-                />
+            {showWebcam && !showCaptureReview && (
+              <div className="space-y-4 relative">
+                <div className="relative">
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    className="w-full rounded-lg border-2 border-primary transform scale-x-[-1]"
+                    data-testid="video-webcam"
+                  />
+                  
+                  {/* Countdown Overlay */}
+                  {countdown !== null && countdown > 0 && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-lg">
+                      <div className="text-9xl font-display text-primary animate-ping-once" data-testid="text-countdown">
+                        {countdown}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Flash Effect */}
+                  {showFlash && (
+                    <div className="absolute inset-0 bg-white rounded-lg animate-flash" data-testid="flash-effect" />
+                  )}
+                </div>
+
                 <div className="flex gap-4 justify-center">
                   <Button
-                    onClick={capturePhoto}
-                    className="px-8 py-4 rounded-xl halloween-gradient text-white font-bold hover:scale-105 transition-transform"
+                    onClick={startCountdown}
+                    disabled={countdown !== null}
+                    className="px-8 py-4 rounded-xl halloween-gradient text-white font-bold hover:scale-105 transition-transform flex items-center gap-2"
                     data-testid="button-capture-snapshot"
                   >
-                    Capture
+                    <Camera className="w-5 h-5" />
+                    {countdown !== null ? 'Capturing...' : 'Capture'}
                   </Button>
                   <Button
-                    onClick={() => {
-                      setShowWebcam(false);
-                      if (streamRef.current) {
-                        streamRef.current.getTracks().forEach(track => track.stop());
-                        streamRef.current = null;
-                      }
-                    }}
+                    onClick={cancelWebcam}
                     variant="outline"
                     className="px-8 py-4 rounded-xl"
                     data-testid="button-cancel-webcam"
                   >
                     Cancel
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {showCaptureReview && capturedImage && (
+              <div className="space-y-4">
+                <div className="relative">
+                  <img
+                    src={capturedImage}
+                    alt="Captured preview"
+                    className="w-full rounded-lg border-2 border-primary"
+                    data-testid="img-capture-preview"
+                  />
+                  <div className="absolute top-4 left-4 bg-green-600 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
+                    <Check className="w-4 h-4" />
+                    Photo Captured
+                  </div>
+                </div>
+                <div className="flex gap-4 justify-center">
+                  <Button
+                    onClick={confirmCapture}
+                    className="px-8 py-4 rounded-xl halloween-gradient text-white font-bold hover:scale-105 transition-transform flex items-center gap-2"
+                    data-testid="button-use-photo"
+                  >
+                    <Check className="w-5 h-5" />
+                    Use This Photo
+                  </Button>
+                  <Button
+                    onClick={retakePhoto}
+                    variant="outline"
+                    className="px-8 py-4 rounded-xl flex items-center gap-2"
+                    data-testid="button-retake-photo"
+                  >
+                    <RotateCcw className="w-5 h-5" />
+                    Retake
                   </Button>
                 </div>
               </div>
