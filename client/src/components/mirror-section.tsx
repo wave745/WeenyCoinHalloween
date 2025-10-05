@@ -2,6 +2,7 @@ import { useScrollAnimation } from '@/hooks/use-scroll-animation';
 import { Button } from '@/components/ui/button';
 import { Upload, Camera, Download, Sparkles } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 const hauntingMessages = [
   "Possessed by the Spirit of a Dead Commit.",
@@ -18,6 +19,7 @@ const hauntingMessages = [
 
 export function MirrorSection() {
   const { ref, isVisible } = useScrollAnimation();
+  const { toast } = useToast();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [hauntedImage, setHauntedImage] = useState<string | null>(null);
   const [hauntingMessage, setHauntingMessage] = useState<string>("");
@@ -58,7 +60,11 @@ export function MirrorSection() {
       }
     } catch (error) {
       console.error('Error accessing webcam:', error);
-      alert('Unable to access camera. Please check permissions.');
+      toast({
+        title: "Camera Access Denied",
+        description: "Unable to access camera. Please check your browser permissions.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -93,14 +99,38 @@ export function MirrorSection() {
     const ctx = canvas.getContext('2d');
     const img = new Image();
 
+    img.onerror = () => {
+      setIsProcessing(false);
+      toast({
+        title: "Image Processing Failed",
+        description: "Unable to process the image. Please try another one.",
+        variant: "destructive",
+      });
+    };
+
     img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
+      // Downscale large images to prevent memory issues
+      const maxDimension = 1920;
+      let width = img.width;
+      let height = img.height;
+
+      if (width > maxDimension || height > maxDimension) {
+        if (width > height) {
+          height = (height / width) * maxDimension;
+          width = maxDimension;
+        } else {
+          width = (width / height) * maxDimension;
+          height = maxDimension;
+        }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
 
       if (!ctx) return;
 
-      // Draw original image
-      ctx.drawImage(img, 0, 0);
+      // Draw original image (scaled if necessary)
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
       // Get image data for manipulation
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
