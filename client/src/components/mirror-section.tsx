@@ -1,7 +1,7 @@
 import { useScrollAnimation } from '@/hooks/use-scroll-animation';
 import { Button } from '@/components/ui/button';
-import { Upload, Camera, Download, Sparkles, RotateCcw, Check } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
+import { Upload, Download, Sparkles } from 'lucide-react';
+import { useState, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 const hauntingMessages = [
@@ -21,30 +21,11 @@ export function MirrorSection() {
   const { ref, isVisible } = useScrollAnimation();
   const { toast } = useToast();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [hauntedImage, setHauntedImage] = useState<string | null>(null);
   const [hauntingMessage, setHauntingMessage] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState(false);
-  const [showWebcam, setShowWebcam] = useState(false);
-  const [countdown, setCountdown] = useState<number | null>(null);
-  const [showFlash, setShowFlash] = useState(false);
-  const [showCaptureReview, setShowCaptureReview] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-      }
-      if (countdownIntervalRef.current) {
-        clearInterval(countdownIntervalRef.current);
-      }
-    };
-  }, []);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -55,110 +36,6 @@ export function MirrorSection() {
         setHauntedImage(null);
       };
       reader.readAsDataURL(file);
-    }
-  };
-
-  const startWebcam = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { 
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-          facingMode: 'user'
-        } 
-      });
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        setShowWebcam(true);
-      }
-    } catch (error) {
-      console.error('Error accessing webcam:', error);
-      toast({
-        title: "Camera Access Denied",
-        description: "Unable to access camera. Please check your browser permissions.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const startCountdown = () => {
-    setCountdown(3);
-    let count = 3;
-
-    countdownIntervalRef.current = setInterval(() => {
-      count--;
-      if (count === 0) {
-        setCountdown(0);
-        if (countdownIntervalRef.current) {
-          clearInterval(countdownIntervalRef.current);
-        }
-        setTimeout(() => {
-          performCapture();
-        }, 100);
-      } else {
-        setCountdown(count);
-      }
-    }, 1000);
-  };
-
-  const performCapture = () => {
-    if (videoRef.current && canvasRef.current) {
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
-      
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      
-      if (ctx) {
-        // Mirror the image for selfie mode
-        ctx.save();
-        ctx.scale(-1, 1);
-        ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
-        ctx.restore();
-        
-        const imageData = canvas.toDataURL('image/png');
-        setCapturedImage(imageData);
-        setShowFlash(true);
-        setCountdown(null);
-        setShowCaptureReview(true);
-        
-        // Hide flash after animation
-        setTimeout(() => setShowFlash(false), 300);
-      }
-    }
-  };
-
-  const confirmCapture = () => {
-    setSelectedImage(capturedImage);
-    setShowWebcam(false);
-    setShowCaptureReview(false);
-    
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-      streamRef.current = null;
-    }
-  };
-
-  const retakePhoto = () => {
-    setCapturedImage(null);
-    setShowCaptureReview(false);
-  };
-
-  const cancelWebcam = () => {
-    setShowWebcam(false);
-    setShowCaptureReview(false);
-    setCapturedImage(null);
-    setCountdown(null);
-    
-    if (countdownIntervalRef.current) {
-      clearInterval(countdownIntervalRef.current);
-    }
-    
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-      streamRef.current = null;
     }
   };
 
@@ -276,7 +153,6 @@ export function MirrorSection() {
     setSelectedImage(null);
     setHauntedImage(null);
     setHauntingMessage("");
-    setCapturedImage(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -293,13 +169,13 @@ export function MirrorSection() {
         <div className="max-w-4xl mx-auto">
           <div className={`bg-card border border-border rounded-2xl p-8 spooky-glow scroll-fade-in ${isVisible ? 'visible' : ''}`}>
             
-            {!selectedImage && !showWebcam && (
+            {!selectedImage && (
               <div className="text-center space-y-6">
                 <div className="text-6xl mb-6 animate-pulse">🪞</div>
                 <p className="text-lg text-muted-foreground mb-8">
                   Dare to reveal your haunted form?
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <div className="flex justify-center">
                   <Button
                     onClick={() => fileInputRef.current?.click()}
                     className="px-8 py-6 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold hover:scale-105 transition-transform flex items-center gap-2"
@@ -307,14 +183,6 @@ export function MirrorSection() {
                   >
                     <Upload className="w-5 h-5" />
                     Upload Photo
-                  </Button>
-                  <Button
-                    onClick={startWebcam}
-                    className="px-8 py-6 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold hover:scale-105 transition-transform flex items-center gap-2"
-                    data-testid="button-capture-photo"
-                  >
-                    <Camera className="w-5 h-5" />
-                    Capture Photo
                   </Button>
                 </div>
                 <input
@@ -328,91 +196,7 @@ export function MirrorSection() {
               </div>
             )}
 
-            {showWebcam && !showCaptureReview && (
-              <div className="space-y-4 relative">
-                <div className="relative">
-                  <video
-                    ref={videoRef}
-                    autoPlay
-                    playsInline
-                    className="w-full rounded-lg border-2 border-primary transform scale-x-[-1]"
-                    data-testid="video-webcam"
-                  />
-                  
-                  {/* Countdown Overlay */}
-                  {countdown !== null && countdown > 0 && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-lg">
-                      <div className="text-9xl font-display text-primary animate-ping-once" data-testid="text-countdown">
-                        {countdown}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Flash Effect */}
-                  {showFlash && (
-                    <div className="absolute inset-0 bg-white rounded-lg animate-flash" data-testid="flash-effect" />
-                  )}
-                </div>
-
-                <div className="flex gap-4 justify-center">
-                  <Button
-                    onClick={startCountdown}
-                    disabled={countdown !== null}
-                    className="px-8 py-4 rounded-xl halloween-gradient text-white font-bold hover:scale-105 transition-transform flex items-center gap-2"
-                    data-testid="button-capture-snapshot"
-                  >
-                    <Camera className="w-5 h-5" />
-                    {countdown !== null ? 'Capturing...' : 'Capture'}
-                  </Button>
-                  <Button
-                    onClick={cancelWebcam}
-                    variant="outline"
-                    className="px-8 py-4 rounded-xl"
-                    data-testid="button-cancel-webcam"
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {showCaptureReview && capturedImage && (
-              <div className="space-y-4">
-                <div className="relative">
-                  <img
-                    src={capturedImage}
-                    alt="Captured preview"
-                    className="w-full rounded-lg border-2 border-primary"
-                    data-testid="img-capture-preview"
-                  />
-                  <div className="absolute top-4 left-4 bg-green-600 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1" data-testid="status-photo-captured">
-                    <Check className="w-4 h-4" />
-                    Photo Captured
-                  </div>
-                </div>
-                <div className="flex gap-4 justify-center">
-                  <Button
-                    onClick={confirmCapture}
-                    className="px-8 py-4 rounded-xl halloween-gradient text-white font-bold hover:scale-105 transition-transform flex items-center gap-2"
-                    data-testid="button-use-photo"
-                  >
-                    <Check className="w-5 h-5" />
-                    Use This Photo
-                  </Button>
-                  <Button
-                    onClick={retakePhoto}
-                    variant="outline"
-                    className="px-8 py-4 rounded-xl flex items-center gap-2"
-                    data-testid="button-retake-photo"
-                  >
-                    <RotateCcw className="w-5 h-5" />
-                    Retake
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {selectedImage && !hauntedImage && !showWebcam && (
+            {selectedImage && !hauntedImage && (
               <div className="space-y-6">
                 <div className="relative group">
                   <img
