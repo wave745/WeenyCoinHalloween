@@ -2,7 +2,7 @@ import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import multer from "multer";
-import OpenAI from "openai";
+import OpenAI, { toFile } from "openai";
 import { unlink } from "fs/promises";
 import { join } from "path";
 import { createReadStream } from "fs";
@@ -38,8 +38,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .png()
         .toFile(tempFilePath);
 
+      // Use OpenAI's toFile helper with a ReadStream to properly infer MIME type
+      const imageFile = await toFile(createReadStream(tempFilePath), 'image.png');
+
       const response = await openai.images.edit({
-        image: createReadStream(tempFilePath),
+        image: imageFile,
         prompt: "apply a haunted Halloween effect: eerie fog, subtle RGB glitch lines, ghostly glowing eyes, cinematic lighting, and a dark cursed atmosphere. add faint distortion and film grain. aesthetic like a haunted digital mirror.",
         n: 1,
         size: "1024x1024",
