@@ -385,7 +385,7 @@ export function MirrorSection() {
                     className="w-full rounded-lg border-2 border-primary"
                     data-testid="img-capture-preview"
                   />
-                  <div className="absolute top-4 left-4 bg-green-600 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
+                  <div className="absolute top-4 left-4 bg-green-600 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1" data-testid="status-photo-captured">
                     <Check className="w-4 h-4" />
                     Photo Captured
                   </div>
