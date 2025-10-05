@@ -25,11 +25,12 @@ export function MirrorSection() {
   const [hauntingMessage, setHauntingMessage] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setSelectedFile(file);
       const reader = new FileReader();
       reader.onload = (e) => {
         setSelectedImage(e.target?.result as string);
@@ -39,105 +40,37 @@ export function MirrorSection() {
     }
   };
 
-  const applyHauntedEffect = () => {
-    if (!selectedImage || !canvasRef.current) return;
+  const applyHauntedEffect = async () => {
+    if (!selectedFile) return;
 
     setIsProcessing(true);
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    const img = new Image();
 
-    img.onerror = () => {
-      setIsProcessing(false);
+    try {
+      const formData = new FormData();
+      formData.append('image', selectedFile);
+
+      const response = await fetch('/api/hauntify', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to haunt image');
+      }
+
+      const data = await response.json();
+      setHauntedImage(data.image);
+      setHauntingMessage(hauntingMessages[Math.floor(Math.random() * hauntingMessages.length)]);
+    } catch (error: any) {
       toast({
-        title: "Image Processing Failed",
-        description: "Unable to process the image. Please try another one.",
+        title: "Haunting Failed",
+        description: error.message || "The spirits are uncooperative. Please try again.",
         variant: "destructive",
       });
-    };
-
-    img.onload = () => {
-      // Downscale large images to prevent memory issues
-      const maxDimension = 1920;
-      let width = img.width;
-      let height = img.height;
-
-      if (width > maxDimension || height > maxDimension) {
-        if (width > height) {
-          height = (height / width) * maxDimension;
-          width = maxDimension;
-        } else {
-          width = (width / height) * maxDimension;
-          height = maxDimension;
-        }
-      }
-
-      canvas.width = width;
-      canvas.height = height;
-
-      if (!ctx) return;
-
-      // Draw original image (scaled if necessary)
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-      // Get image data for manipulation
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const data = imageData.data;
-
-      // Apply effects
-      for (let i = 0; i < data.length; i += 4) {
-        // Grayscale with slight green tint (ghostly)
-        const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-        data[i] = avg * 0.9; // Red
-        data[i + 1] = avg * 1.1; // Green (ghostly tint)
-        data[i + 2] = avg * 0.8; // Blue
-      }
-
-      ctx.putImageData(imageData, 0, 0);
-
-      // RGB Shift (glitch effect)
-      const shiftAmount = 5;
-      const rgbData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const shifted = ctx.getImageData(shiftAmount, 0, canvas.width - shiftAmount, canvas.height);
-      
-      for (let i = 0; i < shifted.data.length; i += 4) {
-        rgbData.data[i] = shifted.data[i]; // Red channel shifted
-      }
-      
-      ctx.putImageData(rgbData, 0, 0);
-
-      // Add vignette (darkened edges)
-      const gradient = ctx.createRadialGradient(
-        canvas.width / 2, canvas.height / 2, 0,
-        canvas.width / 2, canvas.height / 2, canvas.width / 1.5
-      );
-      gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
-      gradient.addColorStop(1, 'rgba(0, 0, 0, 0.7)');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Add ghostly fog overlay
-      ctx.fillStyle = 'rgba(200, 255, 200, 0.1)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Random glitch lines
-      ctx.strokeStyle = 'rgba(0, 255, 100, 0.3)';
-      ctx.lineWidth = 2;
-      for (let i = 0; i < 5; i++) {
-        const y = Math.random() * canvas.height;
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(canvas.width, y);
-        ctx.stroke();
-      }
-
-      const haunted = canvas.toDataURL('image/png');
-      setHauntedImage(haunted);
-      setHauntingMessage(hauntingMessages[Math.floor(Math.random() * hauntingMessages.length)]);
+    } finally {
       setIsProcessing(false);
-    };
-
-    img.src = selectedImage;
+    }
   };
 
   const downloadImage = () => {
@@ -153,6 +86,7 @@ export function MirrorSection() {
     setSelectedImage(null);
     setHauntedImage(null);
     setHauntingMessage("");
+    setSelectedFile(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -272,7 +206,6 @@ export function MirrorSection() {
               </div>
             )}
 
-            <canvas ref={canvasRef} className="hidden" />
           </div>
         </div>
       </div>
