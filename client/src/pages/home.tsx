@@ -5,6 +5,7 @@ import { AboutSection } from '@/components/about-section';
 import { HowToBuySection } from '@/components/how-to-buy-section';
 import { RoadmapSection } from '@/components/roadmap-section';
 import { CommunitySection } from '@/components/community-section';
+import { MirrorSection } from '@/components/mirror-section';
 import { Footer } from '@/components/footer';
 import { ParticleSystem } from '@/components/particle-system';
 
@@ -68,6 +69,7 @@ export default function Home() {
         <HowToBuySection />
         <RoadmapSection />
         <CommunitySection />
+        <MirrorSection />
       </main>
       <Footer />
     </div>

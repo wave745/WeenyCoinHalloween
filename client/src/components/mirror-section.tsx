@@ -184,7 +184,7 @@ export function MirrorSection() {
     <section className="py-20 relative" ref={ref}>
       <div className="container mx-auto px-4">
         <div className={`text-center mb-12 scroll-fade-in ${isVisible ? 'visible' : ''}`}>
-          <h2 className="text-5xl md:text-6xl font-display text-primary mb-4">Look into Winnie's Mirror</h2>
+          <h2 className="text-5xl md:text-6xl font-display text-primary mb-4">Look into Weeny's Mirror</h2>
           <p className="text-xl text-muted-foreground">See what lurks beneath your pixels...</p>
         </div>
 
