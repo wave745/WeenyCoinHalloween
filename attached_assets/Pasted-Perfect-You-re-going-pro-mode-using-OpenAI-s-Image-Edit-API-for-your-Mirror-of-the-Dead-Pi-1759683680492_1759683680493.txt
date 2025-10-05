@@ -1,0 +1,132 @@
+Perfect 👻 You’re going pro mode — using **OpenAI’s Image Edit API** for your “Mirror of the Dead Pixels” effect is exactly how you give Winnie real haunted flair.
+
+Here’s *everything* you need — prompt, API call, parameters, and how to structure it in your Next.js or Node backend.
+
+---
+
+## 🧠 1. **Core Prompt**
+
+Use this prompt to hauntify any uploaded selfie or artwork:
+
+```text
+apply a haunted Halloween effect: eerie fog, subtle RGB glitch lines, ghostly glowing eyes, cinematic lighting, and a dark cursed atmosphere. add faint distortion and film grain. aesthetic like a haunted digital mirror.
+```
+
+---
+
+## ⚙️ 2. **API Setup (Node.js Example)**
+
+Install the OpenAI SDK:
+
+```bash
+npm install openai
+```
+
+Then create a script like `/api/hauntify.js`:
+
+```js
+import OpenAI from "openai";
+import fs from "fs";
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+export default async function handler(req, res) {
+  try {
+    const filePath = "public/uploads/userImage.png"; // path to uploaded image
+
+    const result = await openai.images.edit({
+      model: "gpt-image-1",
+      image: fs.createReadStream(filePath),
+      prompt: "apply a haunted Halloween effect: eerie fog, subtle RGB glitch lines, ghostly glowing eyes, cinematic lighting, and a dark cursed atmosphere. add faint distortion and film grain. aesthetic like a haunted digital mirror.",
+      size: "1024x1024",
+    });
+
+    const hauntedImage = result.data[0].b64_json;
+    const buffer = Buffer.from(hauntedImage, "base64");
+    fs.writeFileSync("public/haunted.png", buffer);
+
+    res.status(200).json({ url: "/haunted.png" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Something spooky happened." });
+  }
+}
+```
+
+---
+
+## 🪩 3. **Frontend Flow**
+
+Simple form in your `Mirror` section:
+
+```html
+<form id="uploadForm" enctype="multipart/form-data">
+  <input type="file" name="image" accept="image/*" required />
+  <button type="submit">Reveal My Haunting</button>
+</form>
+
+<img id="preview" src="" alt="Haunted Result" style="display:none;">
+```
+
+And the JS logic:
+
+```js
+document.getElementById('uploadForm').onsubmit = async (e) => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const res = await fetch('/api/hauntify', {
+    method: 'POST',
+    body: formData,
+  });
+  const data = await res.json();
+  document.getElementById('preview').src = data.url;
+  document.getElementById('preview').style.display = 'block';
+};
+```
+
+---
+
+## ✨ 4. **Optional Add-ons**
+
+Want to make it *feel alive*?
+
+* Add random messages like:
+
+  ```js
+  const hauntMessages = [
+    "The pixels remember you.",
+    "Your reflection has changed.",
+    "The void is watching.",
+    "Haunting complete. But at what cost?"
+  ];
+  ```
+* Add CRT flicker CSS filter:
+
+  ```css
+  #preview {
+    filter: contrast(1.2) brightness(0.9);
+    animation: flicker 0.15s infinite;
+  }
+  @keyframes flicker {
+    0% { opacity: 1; }
+    50% { opacity: 0.95; }
+    100% { opacity: 1; }
+  }
+  ```
+
+---
+
+## ⚡ 5. **Result**
+
+Each user uploads their image →
+Winnie “hauntifies” it via OpenAI →
+They get a spooky, glitch-filtered portrait and a creepy phrase like
+
+> *👁️ “The pixels remember you.”*
+
+---
+
+Would you like me to adapt this setup **exactly** for your current Replit (WeenyCoin) project structure — meaning the file paths, upload handling, and image rendering inside your existing layout?
+That way you can drop it straight in and it’ll just *work*.
