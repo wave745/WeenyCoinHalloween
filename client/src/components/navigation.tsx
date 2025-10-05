@@ -29,13 +29,6 @@ export function Navigation() {
             About
           </button>
           <button 
-            onClick={() => scrollToSection('tokenomics')} 
-            className="text-foreground hover:text-primary transition-colors"
-            data-testid="nav-tokenomics"
-          >
-            Tokenomics
-          </button>
-          <button 
             onClick={() => scrollToSection('how-to-buy')} 
             className="text-foreground hover:text-primary transition-colors"
             data-testid="nav-how-to-buy"
