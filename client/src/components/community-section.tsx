@@ -16,24 +16,6 @@ export function CommunitySection() {
       emoji: "🐦",
       followers: "50K+ Followers",
     },
-    {
-      name: "Telegram",
-      emoji: "✈️",
-      followers: "35K+ Members",
-      delay: 0.1,
-    },
-    {
-      name: "Discord",
-      emoji: "💬",
-      followers: "28K+ Members",
-      delay: 0.2,
-    },
-    {
-      name: "Reddit",
-      emoji: "🤖",
-      followers: "15K+ Members",
-      delay: 0.3,
-    },
   ];
 
   return (
@@ -44,7 +26,7 @@ export function CommunitySection() {
           <p className="text-xl text-muted-foreground">Connect with fellow Weeny believers across the spookyverse</p>
         </div>
         
-        <div className="max-w-4xl mx-auto grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="max-w-md mx-auto grid grid-cols-1 gap-6">
           {socialLinks.map((link) => (
             <a
               key={link.name}
