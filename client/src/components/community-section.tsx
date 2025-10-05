@@ -12,8 +12,8 @@ export function CommunitySection() {
 
   const socialLinks: SocialLink[] = [
     {
-      name: "Twitter",
-      emoji: "🐦",
+      name: "X (Twitter)",
+      emoji: "✖️",
       followers: "50K+ Followers",
     },
   ];
