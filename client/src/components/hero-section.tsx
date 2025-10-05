@@ -34,13 +34,6 @@ export function HeroSection() {
               >
                 Buy $WEENY Now
               </Button>
-              <Button 
-                variant="outline"
-                className="px-8 py-4 rounded-xl bg-muted hover:bg-muted/80 text-foreground font-semibold text-lg hover:scale-105 transition-transform border border-border"
-                data-testid="button-view-chart"
-              >
-                View Chart 📊
-              </Button>
             </div>
             
             {/* Stats */}
