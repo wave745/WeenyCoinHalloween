@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { Navigation } from '@/components/navigation';
 import { HeroSection } from '@/components/hero-section';
 import { AboutSection } from '@/components/about-section';
-import { TokenomicsSection } from '@/components/tokenomics-section';
 import { HowToBuySection } from '@/components/how-to-buy-section';
 import { RoadmapSection } from '@/components/roadmap-section';
 import { CommunitySection } from '@/components/community-section';
@@ -66,7 +65,6 @@ export default function Home() {
       <main>
         <HeroSection />
         <AboutSection />
-        <TokenomicsSection />
         <HowToBuySection />
         <RoadmapSection />
         <CommunitySection />
