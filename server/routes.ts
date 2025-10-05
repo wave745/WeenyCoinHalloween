@@ -3,9 +3,10 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import multer from "multer";
 import OpenAI from "openai";
-import { writeFile, unlink } from "fs/promises";
+import { unlink } from "fs/promises";
 import { join } from "path";
 import { createReadStream } from "fs";
+import sharp from "sharp";
 
 const upload = multer({ 
   storage: multer.memoryStorage(),
@@ -20,14 +21,22 @@ const openai = new OpenAI({
 export async function registerRoutes(app: Express): Promise<Server> {
   // Haunted image effect using OpenAI Image Edit API
   app.post("/api/hauntify", upload.single("image"), async (req: Request & { file?: Express.Multer.File }, res) => {
+    const tempFilePath = join("/tmp", `upload-${Date.now()}.png`);
+    
     try {
       if (!req.file) {
         return res.status(400).json({ error: "No image file uploaded" });
       }
-
-      const tempFilePath = join("/tmp", `upload-${Date.now()}.png`);
       
-      await writeFile(tempFilePath, req.file.buffer);
+      // Convert any image format to exactly 1024x1024 PNG using sharp
+      // OpenAI Image Edit API requires exact dimensions to match the requested output size
+      await sharp(req.file.buffer)
+        .resize(1024, 1024, { 
+          fit: 'cover',
+          position: 'center'
+        })
+        .png()
+        .toFile(tempFilePath);
 
       const response = await openai.images.edit({
         image: createReadStream(tempFilePath),
@@ -36,8 +45,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         size: "1024x1024",
         response_format: "b64_json"
       });
-
-      await unlink(tempFilePath);
 
       const hauntedImage = response.data?.[0]?.b64_json;
 
@@ -54,6 +61,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         error: "Failed to haunt your image. The spirits are uncooperative.",
         details: error.message 
       });
+    } finally {
+      // Always clean up temp file
+      try {
+        await unlink(tempFilePath);
+      } catch {
+        // Ignore unlink errors
+      }
     }
   });
 
