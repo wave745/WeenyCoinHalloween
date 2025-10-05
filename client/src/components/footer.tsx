@@ -28,9 +28,7 @@ export function Footer() {
           </div>
           
           <div className="pt-8 border-t border-border text-center text-muted-foreground text-sm">
-            <p>👻 Haunting the blockchain since 2024... Enter at your own risk 👻</p>
-            <p className="mt-2">$WEENY is a memecoin with no intrinsic value or expectation of financial return.</p>
-            <p className="mt-2">This is not financial advice. Always DYOR! 👻</p>
+            <p>👻 Haunting the blockchain since 2009... 👻</p>
           </div>
         </div>
       </div>
