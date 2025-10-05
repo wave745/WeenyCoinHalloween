@@ -27,29 +27,13 @@ export function HeroSection() {
               The spookiest ghost memecoin on Solana. Join the haunted house party! 👻🎃
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Button 
                 className="px-8 py-4 rounded-xl halloween-gradient text-white font-bold text-lg hover:scale-105 transition-transform spooky-glow"
                 data-testid="button-buy-weeny-now"
               >
                 Buy $WEENY Now
               </Button>
-            </div>
-            
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary" data-testid="stat-market-cap">$2.4M</div>
-                <div className="text-sm text-muted-foreground">Market Cap</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-accent" data-testid="stat-holders">12.8K</div>
-                <div className="text-sm text-muted-foreground">Holders</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-secondary" data-testid="stat-spooky">100%</div>
-                <div className="text-sm text-muted-foreground">Spooky</div>
-              </div>
             </div>
           </div>
           
