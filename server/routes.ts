@@ -55,21 +55,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Write the uploaded file to disk first
       writeFileSync(inputPath, req.file.buffer);
       
-      // Convert to PNG with proper RGBA format (4 channels with alpha)
-      // Force RGBA by using composite with a transparent overlay
-      await sharp(inputPath)
-        .resize(1024, 1024, { fit: "cover", position: "center" })
-        .composite([{
-          input: Buffer.from([255, 255, 255, 0]), // Transparent overlay
-          blend: 'multiply'
-        }])
-        .png({ 
-          quality: 100,
-          compressionLevel: 0,
-          adaptiveFiltering: false,
-          force: true
-        })
-        .toFile(pngPath);
+       // Convert to PNG with proper RGBA format (4 channels with alpha)
+       // Use a simpler approach - just ensure alpha channel
+       await sharp(inputPath)
+         .resize(1024, 1024, { fit: "cover", position: "center" })
+         .ensureAlpha() // Add alpha channel
+         .png({ 
+           quality: 100,
+           compressionLevel: 0,
+           adaptiveFiltering: false,
+           force: true
+         })
+         .toFile(pngPath);
       
       // Debug: Check the converted image format
       const imageInfo = await sharp(pngPath).metadata();

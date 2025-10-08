@@ -26,11 +26,16 @@ export function MirrorSection() {
   const [isProcessing, setIsProcessing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isJpgFile, setIsJpgFile] = useState(false);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setSelectedFile(file);
+      // Check if it's a JPG file
+      const isJpg = file.type === 'image/jpeg' || file.name.toLowerCase().endsWith('.jpg') || file.name.toLowerCase().endsWith('.jpeg');
+      setIsJpgFile(isJpg);
+      
       const reader = new FileReader();
       reader.onload = (e) => {
         setSelectedImage(e.target?.result as string);
@@ -88,6 +93,7 @@ export function MirrorSection() {
     setHauntedImage(null);
     setHauntingMessage("");
     setSelectedFile(null);
+    setIsJpgFile(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -120,6 +126,18 @@ export function MirrorSection() {
                     Upload Photo
                   </Button>
                 </div>
+                
+                {/* File Format Recommendation */}
+                <div className="mt-4 p-4 bg-gradient-to-r from-purple-900/30 to-indigo-900/30 border border-purple-500/40 rounded-lg backdrop-blur-sm">
+                  <div className="flex items-center gap-2 text-purple-300 text-sm">
+                    <span className="text-lg">🔮</span>
+                    <span className="font-medium">Spirit's Guidance:</span>
+                  </div>
+                  <p className="text-purple-200 text-sm mt-1">
+                    The spirits prefer <strong>PNG files</strong> for clearer visions. JPG files may appear distorted in the mirror.
+                  </p>
+                </div>
+                
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -133,6 +151,19 @@ export function MirrorSection() {
 
             {selectedImage && !hauntedImage && (
               <div className="space-y-6">
+                {/* JPG Warning */}
+                {isJpgFile && (
+                  <div className="p-4 bg-gradient-to-r from-orange-900/30 to-red-900/30 border border-orange-500/40 rounded-lg backdrop-blur-sm">
+                    <div className="flex items-center gap-2 text-orange-300 text-sm">
+                      <span className="text-lg">👻</span>
+                      <span className="font-medium">Spirit's Warning:</span>
+                    </div>
+                    <p className="text-orange-200 text-sm mt-1">
+                      The spirits sense a JPG file. The mirror may show distorted visions. Consider using PNG for clearer haunting.
+                    </p>
+                  </div>
+                )}
+                
                 <div className="relative group">
                   <img
                     src={selectedImage}
