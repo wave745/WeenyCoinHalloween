@@ -230,3 +230,129 @@
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, hsl(25, 100%, 60%), hsl(270, 100%, 52%));
 }
+
+/* Haunted Glitch Effects */
+.haunted-glitch {
+  filter: contrast(1.5) brightness(0.7) grayscale(0.2) saturate(1.5);
+  animation: glitch 0.15s infinite;
+  position: relative;
+}
+
+.haunted-glitch::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent 50%, rgba(255, 0, 0, 0.1) 50%);
+  animation: scanline 0.1s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes glitch {
+  0% { 
+    transform: translate(0px, 0px); 
+    filter: contrast(1.5) brightness(0.7) grayscale(0.2) saturate(1.5);
+  }
+  10% { 
+    transform: translate(-2px, 2px); 
+    filter: contrast(1.5) brightness(0.7) grayscale(0.2) saturate(1.5) hue-rotate(90deg);
+  }
+  20% { 
+    transform: translate(2px, -2px); 
+    filter: contrast(1.5) brightness(0.7) grayscale(0.2) saturate(1.5) hue-rotate(180deg);
+  }
+  30% { 
+    transform: translate(-2px, -2px); 
+    filter: contrast(1.5) brightness(0.7) grayscale(0.2) saturate(1.5) hue-rotate(270deg);
+  }
+  40% { 
+    transform: translate(2px, 2px); 
+    filter: contrast(1.5) brightness(0.7) grayscale(0.2) saturate(1.5) hue-rotate(360deg);
+  }
+  50% { 
+    transform: translate(0px, 0px); 
+    filter: contrast(1.5) brightness(0.7) grayscale(0.2) saturate(1.5);
+  }
+  60% { 
+    transform: translate(-1px, 1px); 
+    filter: contrast(1.5) brightness(0.7) grayscale(0.2) saturate(1.5) hue-rotate(45deg);
+  }
+  70% { 
+    transform: translate(1px, -1px); 
+    filter: contrast(1.5) brightness(0.7) grayscale(0.2) saturate(1.5) hue-rotate(135deg);
+  }
+  80% { 
+    transform: translate(-1px, -1px); 
+    filter: contrast(1.5) brightness(0.7) grayscale(0.2) saturate(1.5) hue-rotate(225deg);
+  }
+  90% { 
+    transform: translate(1px, 1px); 
+    filter: contrast(1.5) brightness(0.7) grayscale(0.2) saturate(1.5) hue-rotate(315deg);
+  }
+  100% { 
+    transform: translate(0px, 0px); 
+    filter: contrast(1.5) brightness(0.7) grayscale(0.2) saturate(1.5);
+  }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+/* Haunted text effects */
+.haunted-text {
+  text-shadow: 
+    0 0 15px rgba(255, 0, 0, 1),
+    0 0 25px rgba(0, 255, 255, 0.8),
+    0 0 35px rgba(255, 0, 255, 0.6),
+    0 0 45px rgba(255, 255, 0, 0.4);
+  animation: textGlitch 1.5s infinite;
+  color: #ff0066 !important;
+}
+
+@keyframes textGlitch {
+  0%, 85%, 100% {
+    transform: translate(0);
+    filter: hue-rotate(0deg);
+    text-shadow: 
+      0 0 15px rgba(255, 0, 0, 1),
+      0 0 25px rgba(0, 255, 255, 0.8),
+      0 0 35px rgba(255, 0, 255, 0.6);
+  }
+  5% {
+    transform: translate(-3px, 3px);
+    filter: hue-rotate(90deg);
+    text-shadow: 
+      0 0 15px rgba(0, 255, 0, 1),
+      0 0 25px rgba(255, 0, 255, 0.8),
+      0 0 35px rgba(255, 255, 0, 0.6);
+  }
+  10% {
+    transform: translate(3px, -3px);
+    filter: hue-rotate(180deg);
+    text-shadow: 
+      0 0 15px rgba(0, 0, 255, 1),
+      0 0 25px rgba(255, 255, 0, 0.8),
+      0 0 35px rgba(255, 0, 0, 0.6);
+  }
+  15% {
+    transform: translate(-3px, -3px);
+    filter: hue-rotate(270deg);
+    text-shadow: 
+      0 0 15px rgba(255, 255, 0, 1),
+      0 0 25px rgba(0, 255, 0, 0.8),
+      0 0 35px rgba(0, 0, 255, 0.6);
+  }
+  20% {
+    transform: translate(3px, 3px);
+    filter: hue-rotate(360deg);
+    text-shadow: 
+      0 0 15px rgba(255, 0, 255, 1),
+      0 0 25px rgba(255, 0, 0, 0.8),
+      0 0 35px rgba(0, 255, 255, 0.6);
+  }
+}

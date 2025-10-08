@@ -5,16 +5,16 @@ import { useState, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 const hauntingMessages = [
-  "Possessed by the Spirit of a Dead Commit.",
-  "You have 7 errors remaining...",
-  "Your reflection is no longer synced.",
-  "The code compiles... but at what cost?",
-  "404: Soul Not Found",
-  "Haunted by infinite loops forever...",
-  "Your branches have merged with the darkness.",
-  "Stack overflow in the afterlife.",
-  "Debugging eternity, one ghost at a time.",
-  "Your pull request was rejected by death itself.",
+  "👁️ The pixels remember you.",
+  "☠️ Your reflection has changed.",
+  "⚡ The mirror is awake.",
+  "💀 Haunting complete.",
+  "🕸️ Do not refresh.",
+  "👻 The spirits have claimed your image.",
+  "🔮 Your digital soul is trapped.",
+  "🌫️ The fog remembers your face.",
+  "⚰️ Welcome to the haunted dimension.",
+  "🔮 The curse is now permanent.",
 ];
 
 export function MirrorSection() {
@@ -60,6 +60,7 @@ export function MirrorSection() {
       }
 
       const data = await response.json();
+      console.log('Haunted image received:', data.image ? 'Yes' : 'No');
       setHauntedImage(data.image);
       setHauntingMessage(hauntingMessages[Math.floor(Math.random() * hauntingMessages.length)]);
     } catch (error: any) {
@@ -167,21 +168,27 @@ export function MirrorSection() {
 
             {hauntedImage && (
               <div className="space-y-6 animate-in fade-in duration-500">
-                <div className="relative border-4 border-primary rounded-lg p-2 bg-gradient-to-br from-purple-900/20 to-green-900/20">
+                <div className="relative border-4 border-red-500 rounded-lg p-2 bg-gradient-to-br from-purple-900/20 to-green-900/20 shadow-2xl">
                   <img
                     src={hauntedImage}
                     alt="Your haunted reflection"
-                    className="w-full rounded-lg"
+                    className="w-full rounded-lg haunted-glitch"
                     data-testid="img-haunted-reflection"
                   />
                   <div className="absolute inset-0 pointer-events-none">
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-lg"></div>
+                    <div className="absolute top-2 left-2 text-red-500 text-xs font-mono opacity-70">
+                      [HAUNTED]
+                    </div>
+                    <div className="absolute bottom-2 right-2 text-cyan-400 text-xs font-mono opacity-70">
+                      [CURSED]
+                    </div>
                   </div>
                 </div>
                 
                 {hauntingMessage && (
                   <div className="text-center p-6 bg-black/40 rounded-xl border border-primary/30" data-testid="text-haunting-message">
-                    <p className="text-lg font-display text-primary italic">"{hauntingMessage}"</p>
+                    <p className="text-lg font-display text-primary italic haunted-text">"{hauntingMessage}"</p>
                   </div>
                 )}
 
